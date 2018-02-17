@@ -31,23 +31,26 @@ public class Maze : MonoBehaviour
 
     }
 
-    public IEnumerator Generate()
+    public MazeCell GetCell (IntVector2 coordinate)
     {
-        WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
-        cells = new MazeCell[size.x, size.z];
-        IntVector2 coordinates = RandomCoordinates;
-        while (ContainsCoordinates(coordinates))
-        {
-            yield return delay;
-            CreateCell(coordinates);
-            coordinates.z += 1;
-        }
+        return cells[coordinate.x, coordinate.z];
     }
+
+    public IEnumerator Generate () {
+		WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
+		cells = new MazeCell[size.x, size.z];
+		IntVector2 coordinates = RandomCoordinates;
+		while (ContainsCoordinates(coordinates) && GetCell(coordinates) == null) {
+			yield return delay;
+			CreateCell(coordinates);
+			coordinates += MazeDirections.RandomValue.ToIntVector2();
+		}
+	}
 
     public bool ContainsCoordinates(IntVector2 coordinate)
     {
         return coordinate.x >= 0 && coordinate.x < size.x && coordinate.z >= 0 && coordinate.z < size.z;
-    }
+    }   
 
     private void CreateCell(IntVector2 coordinates)
     {
