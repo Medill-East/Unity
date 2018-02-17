@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,9 +8,17 @@ public class Maze : MonoBehaviour
 
     private MazeCell[,] cells;
 
-    public int sizeX, sizeZ;
+    public IntVector2 size;
     public float generationStepDelay;
     public MazeCell cellPrefab;
+
+    public IntVector2 RandomCoordinates
+    {
+        get
+        {
+            return new IntVector2(Random.Range(0,size.x),Random.Range(0,size.z));
+        }
+    }
 
     void Start()
     {
@@ -25,23 +34,27 @@ public class Maze : MonoBehaviour
     public IEnumerator Generate()
     {
         WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
-        cells = new MazeCell[sizeX, sizeZ];
-        for (int x = 0; x < sizeX; x++)
+        cells = new MazeCell[size.x, size.z];
+        IntVector2 coordinates = RandomCoordinates;
+        while (ContainsCoordinates(coordinates))
         {
-            for (int z = 0; z < sizeZ; z++)
-            {
-                yield return delay;
-                CreateCell(x, z);
-            }
+            yield return delay;
+            CreateCell(coordinates);
+            coordinates.z += 1;
         }
     }
 
-    private void CreateCell(int x, int z)
+    public bool ContainsCoordinates(IntVector2 coordinate)
+    {
+        return coordinate.x >= 0 && coordinate.x < size.x && coordinate.z >= 0 && coordinate.z < size.z;
+    }
+
+    private void CreateCell(IntVector2 coordinates)
     {
         MazeCell newCell = Instantiate(cellPrefab) as MazeCell;
-        cells[x, z] = newCell;
-        newCell.name = "Maze Cell " + x + ", " + z;
+        cells[coordinates.x, coordinates.z] = newCell;
+        newCell.name = "Maze Cell " + coordinates.x + ", " + coordinates.z;
         newCell.transform.parent = transform;
-        newCell.transform.localPosition = new Vector3(x - sizeX * 0.5f + 0.5f, 0f, z - sizeZ * 0.5f + 0.5f);
+        newCell.transform.localPosition = new Vector3(coordinates.x - size.x * 0.5f + 0.5f, 0f, coordinates.z - size.z * 0.5f + 0.5f);
     }
 }
