@@ -58,6 +58,18 @@ MonoBehaviour:
     type: 2}
   passagePrefab: {fileID: 114239297937751914, guid: 01b299fa5ebac524cab6a46d6c9df33a,
     type: 2}
-  wallPrefab: {fileID: 114485531207154636, guid: 37db514e909684c48a82c8ee8b2750d9,
+  wallPrefabs:
+  - {fileID: 114485531207154636, guid: 37db514e909684c48a82c8ee8b2750d9, type: 2}
+  - {fileID: 114485531207154636, guid: 37db514e909684c48a82c8ee8b2750d9, type: 2}
+  - {fileID: 114485531207154636, guid: 37db514e909684c48a82c8ee8b2750d9, type: 2}
+  - {fileID: 114485531207154636, guid: 37db514e909684c48a82c8ee8b2750d9, type: 2}
+  - {fileID: 114485531207154636, guid: 37db514e909684c48a82c8ee8b2750d9, type: 2}
+  - {fileID: 114485531207154636, guid: 37db514e909684c48a82c8ee8b2750d9, type: 2}
+  - {fileID: 114485531207154636, guid: 37db514e909684c48a82c8ee8b2750d9, type: 2}
+  - {fileID: 114141351019340336, guid: b13c110049cb1704aa56622d33eba5b3, type: 2}
+  - {fileID: 114666775842521582, guid: de931bd14be5e944b93511614a778bce, type: 2}
+  - {fileID: 114545687669275316, guid: 38c93adea98148e44b0337576dccd80d, type: 2}
+  doorPrefab: {fileID: 114653261608857030, guid: 1a8f8d073ab9fca478c9fd7fda99923c,
     type: 2}
   generationStepDelay: 0.01
+  doorProbability: 0.1
