@@ -71,5 +71,14 @@ MonoBehaviour:
   - {fileID: 114545687669275316, guid: 38c93adea98148e44b0337576dccd80d, type: 2}
   doorPrefab: {fileID: 114653261608857030, guid: 1a8f8d073ab9fca478c9fd7fda99923c,
     type: 2}
+  roomSettings:
+  - floorMaterial: {fileID: 0}
+    wallMaterial: {fileID: 0}
+  - floorMaterial: {fileID: 0}
+    wallMaterial: {fileID: 0}
+  - floorMaterial: {fileID: 0}
+    wallMaterial: {fileID: 0}
+  - floorMaterial: {fileID: 0}
+    wallMaterial: {fileID: 0}
   generationStepDelay: 0.01
   doorProbability: 0.1

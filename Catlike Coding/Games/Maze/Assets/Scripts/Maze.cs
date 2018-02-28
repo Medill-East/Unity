@@ -5,14 +5,15 @@ using UnityEngine;
 
 public class Maze : MonoBehaviour
 {
-
     private MazeCell[,] cells;
+    private List<MazeRoom> rooms = new List<MazeRoom>();
 
     public IntVector2 size;
     public MazeCell cellPrefab;
     public MazePassage passagePrefab;
     public MazeWall[] wallPrefabs;
     public MazeDoor doorPrefab;
+    public MazeRoomSettings[] roomSettings;
 
     public float generationStepDelay;
 
@@ -52,7 +53,9 @@ public class Maze : MonoBehaviour
 
     private void DoFirstGenerationStep(List<MazeCell> activeCells)
     {
-        activeCells.Add(CreateCell(RandomCoordinates));
+        MazeCell newCell = CreateCell(RandomCoordinates);
+        newCell.Initialize(CreateRoom(-1));
+        activeCells.Add(newCell);
     }
 
     private void DoNextGenerationStep(List<MazeCell> activeCells)
@@ -105,6 +108,14 @@ public class Maze : MonoBehaviour
         MazePassage passage = Instantiate(prefab) as MazePassage;
         passage.Initialize(cell, otherCell, direction);
         passage = Instantiate(prefab) as MazePassage;
+        if(passage is MazeDoor)
+        {
+            otherCell.Initialize(CreateRoom(cell.room.settingsIndex));
+        }
+        else
+        {
+            otherCell.Initialize(cell.room);
+        }
         passage.Initialize(otherCell, cell, direction.GetOpposite());
     }
 
@@ -122,5 +133,18 @@ public class Maze : MonoBehaviour
         newCell.transform.parent = transform;
         newCell.transform.localPosition = new Vector3(coordinates.x - size.x * 0.5f + 0.5f, 0f, coordinates.z - size.z * 0.5f + 0.5f);
         return newCell;
+    }
+
+    private MazeRoom CreateRoom(int indexToExclude)
+    {
+        MazeRoom newRoom = ScriptableObject.CreateInstance<MazeRoom>();
+        newRoom.settingsIndex = Random.Range(0, roomSettings.Length);
+        if(newRoom.settingsIndex == indexToExclude)
+        {
+            newRoom.settingsIndex = (newRoom.settingsIndex + 1) % roomSettings.Length;
+        }
+        newRoom.settings = roomSettings[newRoom.settingsIndex];
+        rooms.Add(newRoom);
+        return newRoom;
     }
 }
