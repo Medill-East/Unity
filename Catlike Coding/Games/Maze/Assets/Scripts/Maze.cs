@@ -24,24 +24,19 @@ public class Maze : MonoBehaviour
     {
         get
         {
-            return new IntVector2(Random.Range(0,size.x),Random.Range(0,size.z));
+            return new IntVector2(Random.Range(0, size.x), Random.Range(0, size.z));
         }
     }
 
-    public MazeCell GetCell (IntVector2 coordinate)
+    public MazeCell GetCell(IntVector2 coordinate)
     {
         return cells[coordinate.x, coordinate.z];
     }
 
-    public IEnumerator Generate ()
+    public IEnumerator Generate()
     {
-		WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
-		cells = new MazeCell[size.x, size.z];
-        //IntVector2 coordinates = RandomCoordinates;
-        //while (ContainsCoordinates(coordinates) && GetCell(coordinates) == null) {
-        //	yield return delay;
-        //	CreateCell(coordinates);
-        //	coordinates += MazeDirections.RandomValue.ToIntVector2();
+        WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
+        cells = new MazeCell[size.x, size.z];
         List<MazeCell> activeCells = new List<MazeCell>();
         DoFirstGenerationStep(activeCells);
         while (activeCells.Count > 0)
@@ -49,7 +44,11 @@ public class Maze : MonoBehaviour
             yield return delay;
             DoNextGenerationStep(activeCells);
         }
-	}
+        for (int i = 0; i < rooms.Count; i++)
+        {
+            rooms[i].Hide();
+        }
+    }
 
     private void DoFirstGenerationStep(List<MazeCell> activeCells)
     {
@@ -62,23 +61,23 @@ public class Maze : MonoBehaviour
     {
         int currentIndex = activeCells.Count - 1;
         MazeCell currentCell = activeCells[currentIndex];
-        if(currentCell.IsFullyInitialized)
+        if (currentCell.IsFullyInitialized)
         {
             activeCells.RemoveAt(currentIndex);
             return;
         }
         MazeDirection direction = currentCell.RandomUninitializedDirection;
         IntVector2 coordinates = currentCell.coordinates + direction.ToIntVector2();
-        if(ContainsCoordinates(coordinates))
+        if (ContainsCoordinates(coordinates))
         {
             MazeCell neighbor = GetCell(coordinates);
-            if(neighbor == null)
+            if (neighbor == null)
             {
                 neighbor = CreateCell(coordinates);
                 CreatePassage(currentCell, neighbor, direction);
                 activeCells.Add(neighbor);
             }
-            else if(currentCell.room.settingsIndex == neighbor.room.settingsIndex)
+            else if (currentCell.room.settingsIndex == neighbor.room.settingsIndex)
             {
                 CreatePassageInSameRoom(currentCell, neighbor, direction);
             }
@@ -97,11 +96,11 @@ public class Maze : MonoBehaviour
 
     private void CreateWall(MazeCell cell, MazeCell otherCell, MazeDirection direction)
     {
-        MazeWall wall = Instantiate(wallPrefabs[Random.Range(0,wallPrefabs.Length)]) as MazeWall;
+        MazeWall wall = Instantiate(wallPrefabs[Random.Range(0, wallPrefabs.Length)]) as MazeWall;
         wall.Initialize(cell, otherCell, direction);
-        if(otherCell != null)
+        if (otherCell != null)
         {
-            wall = Instantiate(wallPrefabs[Random.Range(0,wallPrefabs.Length)]) as MazeWall;
+            wall = Instantiate(wallPrefabs[Random.Range(0, wallPrefabs.Length)]) as MazeWall;
             wall.Initialize(otherCell, cell, direction.GetOpposite());
         }
     }
@@ -112,7 +111,7 @@ public class Maze : MonoBehaviour
         MazePassage passage = Instantiate(prefab) as MazePassage;
         passage.Initialize(cell, otherCell, direction);
         passage = Instantiate(prefab) as MazePassage;
-        if(passage is MazeDoor)
+        if (passage is MazeDoor)
         {
             otherCell.Initialize(CreateRoom(cell.room.settingsIndex));
         }
@@ -126,7 +125,7 @@ public class Maze : MonoBehaviour
     public bool ContainsCoordinates(IntVector2 coordinate)
     {
         return coordinate.x >= 0 && coordinate.x < size.x && coordinate.z >= 0 && coordinate.z < size.z;
-    }   
+    }
 
     private MazeCell CreateCell(IntVector2 coordinates)
     {
@@ -143,7 +142,7 @@ public class Maze : MonoBehaviour
     {
         MazeRoom newRoom = ScriptableObject.CreateInstance<MazeRoom>();
         newRoom.settingsIndex = Random.Range(0, roomSettings.Length);
-        if(newRoom.settingsIndex == indexToExclude)
+        if (newRoom.settingsIndex == indexToExclude)
         {
             newRoom.settingsIndex = (newRoom.settingsIndex + 1) % roomSettings.Length;
         }
@@ -152,13 +151,13 @@ public class Maze : MonoBehaviour
         return newRoom;
     }
 
-    private void CreatePassageInSameRoom(MazeCell cell,MazeCell otherCell,MazeDirection direction)
+    private void CreatePassageInSameRoom(MazeCell cell, MazeCell otherCell, MazeDirection direction)
     {
         MazePassage passage = Instantiate(passagePrefab) as MazePassage;
         passage.Initialize(cell, otherCell, direction);
         passage = Instantiate(passagePrefab) as MazePassage;
         passage.Initialize(otherCell, cell, direction.GetOpposite());
-        if(cell.room != otherCell.room)
+        if (cell.room != otherCell.room)
         {
             MazeRoom roomToAssimilate = otherCell.room;
             cell.room.Assimilate(roomToAssimilate);
