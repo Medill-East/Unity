@@ -78,6 +78,10 @@ public class Maze : MonoBehaviour
                 CreatePassage(currentCell, neighbor, direction);
                 activeCells.Add(neighbor);
             }
+            else if(currentCell.room.settingsIndex == neighbor.room.settingsIndex)
+            {
+                CreatePassageInSameRoom(currentCell, neighbor, direction);
+            }
             else
             {
                 CreateWall(currentCell, neighbor, direction);
@@ -146,5 +150,20 @@ public class Maze : MonoBehaviour
         newRoom.settings = roomSettings[newRoom.settingsIndex];
         rooms.Add(newRoom);
         return newRoom;
+    }
+
+    private void CreatePassageInSameRoom(MazeCell cell,MazeCell otherCell,MazeDirection direction)
+    {
+        MazePassage passage = Instantiate(passagePrefab) as MazePassage;
+        passage.Initialize(cell, otherCell, direction);
+        passage = Instantiate(passagePrefab) as MazePassage;
+        passage.Initialize(otherCell, cell, direction.GetOpposite());
+        if(cell.room != otherCell.room)
+        {
+            MazeRoom roomToAssimilate = otherCell.room;
+            cell.room.Assimilate(roomToAssimilate);
+            rooms.Remove(roomToAssimilate);
+            Destroy(roomToAssimilate);
+        }
     }
 }
